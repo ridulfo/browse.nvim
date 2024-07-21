@@ -37,7 +37,7 @@ function Download(url)
 	end
 
 	local filepath = config.options.download_path .. "/" .. filename
-	vim.notify("Downloading " .. url .. " to " .. filepath)
+	vim.notify("Downloading " .. url .. " to " .. filepath, vim.log.levels.DEBUG)
 
 	local file = io.open(filepath, "w")
 	if file == nil then
