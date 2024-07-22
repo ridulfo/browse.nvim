@@ -24,7 +24,10 @@ This will result in the following directories and files being created in the dow
         - index.md
         - blog/
             - post-123.md
+
 ```
+## Demo
+[![asciicast](https://asciinema.org/a/EhIEwv3qPtXUJaUKcjr1x77l6.svg)](https://asciinema.org/a/EhIEwv3qPtXUJaUKcjr1x77l6)
 
 ## Installation
 Just add this to your [Lazy.nvim](https://lazy.folke.io) plugins:
