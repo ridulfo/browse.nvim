@@ -32,7 +32,7 @@ M.setup = function(opts)
 			vim.notify("Failed to download " .. url, vim.log.levels.ERROR)
 		end
 
-		vim.cmd("vsplit " .. filepath)
+		vim.cmd("e " .. filepath)
 	end, {
 		nargs = "+",
 		desc = "Download a webpage and convert it to Markdown",
