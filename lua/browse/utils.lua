@@ -1,6 +1,6 @@
-M = {}
+local M = {}
 
-local function expand_tilde(path)
+M.expand_tilde = function(path)
     if path:sub(1, 1) == '~' then
         local home = os.getenv("HOME")
         if home then
@@ -12,7 +12,5 @@ local function expand_tilde(path)
     end
     return path
 end
-
-M.expand_tilde = expand_tilde
 
 return M
