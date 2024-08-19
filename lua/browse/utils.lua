@@ -57,10 +57,25 @@ M.file_path_from_url = function(url, download_directory)
 	-- Steps:
 	-- 1. Remove protocol prefix
 	-- 2. Replace slashes with underscores #TODO: use tree-structure
-	local filename = string.gsub(url, "https?://", "") .. ".md"
-	filename = string.gsub(filename, "/", "_")
+	local path = string.gsub(url, "https?://", "")
+	if path:sub(-1) == "/" then
+		path = path .. "index.md"
+	else
+		local last_segment = path:match("([^/]+)$")
+		if not last_segment:match("%.[^/]+$") then
+			path = path .. "/index.md"
+		else
+			path = path .. ".md"
+		end
+	end
 
-	return download_directory .. "/" .. filename
+	local full_path = download_directory .. "/" .. path
+
+	-- Create directories as needed
+	local dir = full_path:match("(.*/)")
+	os.execute("mkdir -p " .. dir)
+
+	return full_path
 end
 
 return M
