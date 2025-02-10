@@ -89,7 +89,8 @@ local function filePathFromUrl(url, download_directory)
 		vim.notify("Invalid URL: " .. url, vim.log.levels.ERROR)
 		return nil
 	end
-	-- Ensure there is a slash so that a URL with no path becomes a folder root.
+
+	-- If no path was provided (eg., "example.com") use "/" for the home directory.
 	if path == "" then
 		path = "/"
 	end
@@ -98,7 +99,7 @@ local function filePathFromUrl(url, download_directory)
 	local domain_dir = download_directory .. "/" .. domain
 	os.execute("mkdir -p " .. vim.fn.shellescape(domain_dir))
 
-	-- Split the remaining path into segments.
+	-- Break the path into segments.
 	local segments = {}
 	for segment in path:gmatch("([^/]+)") do
 		table.insert(segments, segment)
@@ -106,27 +107,41 @@ local function filePathFromUrl(url, download_directory)
 
 	local current_dir = domain_dir
 	if #segments > 0 then
-		-- Create directories for all segments except the last one.
-		for i = 1, #segments - 1 do
+		-- Create all directories except for what might be the file/final segment.
+		for i = 1, (#segments - 1) do
 			current_dir = current_dir .. "/" .. segments[i]
 			os.execute("mkdir -p " .. vim.fn.shellescape(current_dir))
 		end
 	end
 
 	local filename = ""
-	-- If the URL ends with a slash or if there are no segments,
-	-- use "index.md" as the default filename.
-	if path:sub(-1) == "/" or #segments == 0 then
+	-- CASE 1: URL ends with a slash → treat as a directory.
+	if path:sub(-1) == "/" then
+		-- If there is a final named segment before the trailing slash, include it.
+		if #segments > 0 then
+			current_dir = current_dir .. "/" .. segments[#segments]
+			os.execute("mkdir -p " .. vim.fn.shellescape(current_dir))
+		end
+		filename = "index.md"
+		-- CASE 2: There are no segments (eg. "http://example.com") → use index.md at the domain level.
+	elseif #segments == 0 then
 		filename = "index.md"
 	else
 		local last_segment = segments[#segments]
-		-- If the last segment does not appear to have an extension, treat it as a folder.
-		if not last_segment:match("%.[^/]+$") then
+		-- Check if the last segment appears to have a file extension (contains a dot).
+		if not last_segment:find("%.") then
+			-- No extension found – treat it as a directory.
 			current_dir = current_dir .. "/" .. last_segment
 			os.execute("mkdir -p " .. vim.fn.shellescape(current_dir))
 			filename = "index.md"
 		else
-			filename = last_segment .. ".md"
+			-- It appears to be a file name.
+			-- Option A: Simply append ".md" (as in your original code)
+			-- filename = last_segment .. ".md"
+			--
+			-- Option B: Replace its extension with .md.
+			local base = last_segment:match("(.+)%.[^%.]+$") or last_segment
+			filename = base .. ".md"
 		end
 	end
 
