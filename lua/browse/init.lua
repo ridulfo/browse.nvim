@@ -39,7 +39,7 @@ end
 
 -- Expand a tilde ('~') in a path to the user's home directory.
 local function expandTilde(path)
-	if path:sub(1, 1) == "~" then
+	if path:match("^~[/\\]") or path == "~" then
 		local home = os.getenv("HOME")
 		if home then
 			return home .. path:sub(2)
