@@ -28,7 +28,7 @@ local function setupCustomGf()
 		group = group,
 		pattern = "*",
 		callback = function()
-			vim.keymap.set("n", "gf", customGf, { noremap = true, silent = true })
+			vim.keymap.set("n", "gf", customGf, { noremap = true, silent = true, buffer = 0 })
 		end,
 	})
 end
